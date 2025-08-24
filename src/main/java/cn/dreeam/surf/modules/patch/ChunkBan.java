@@ -1,6 +1,7 @@
 package cn.dreeam.surf.modules.patch;
 
 import cn.dreeam.surf.config.Config;
+import cn.dreeam.surf.checks.CheckManager;
 import cn.dreeam.surf.util.MessageUtil;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Chunk;
@@ -26,7 +27,8 @@ public class ChunkBan implements Listener {
         Player player = event.getPlayer();
         Chunk chunk = block.getChunk();
 
-        if (player.hasPermission("surf.bypass.chunkban")) return;
+        // 检查OP跳过权限
+        if (CheckManager.canBypassCheck(player) || player.hasPermission("surf.bypass.chunkban")) return;
 
         if (isTileEntity(block.getType()) && chunk.getTileEntities().length > Config.perChunkLimitTitleEntityMax) {
             event.setCancelled(true);
@@ -49,10 +51,11 @@ public class ChunkBan implements Listener {
         if (!Config.perChunkLimitEnabled || event.getClickedBlock() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getItem() == null) return;
 
         Player player = event.getPlayer();
-        if (player.hasPermission("surf.bypass.chunkban")) return;
+        // 检查OP跳过权限
+        if (CheckManager.canBypassCheck(player) || player.hasPermission("surf.bypass.chunkban")) return;
 
         Chunk chunk = event.getClickedBlock().getChunk();
-        if (event.getItem().getType().equals(XMaterial.ITEM_FRAME.parseMaterial())) {
+        if (event.getItem().getType().equals(XMaterial.ITEM_FRAME.get())) {
             long amount = Arrays.stream(chunk.getEntities()).filter(entity -> entity instanceof ItemFrame).count();
             if (amount + chunk.getTileEntities().length > Config.perChunkLimitTitleEntityMax) {
                 event.setCancelled(true);
@@ -62,33 +65,33 @@ public class ChunkBan implements Listener {
     }
 
     private boolean isTileEntity(Material m) {
-        switch (m) {
-            //TODO
-            //case ENCHANTMENT_TABLE:
-            //case WALL_BANNER:
-            //case SIGN_POST:
-            case FURNACE:
-            case TRAPPED_CHEST:
-            case ACACIA_SIGN:
-            case ACACIA_WALL_SIGN:
-            case HOPPER:
-            case DROPPER:
-            case DISPENSER:
-            case BREWING_STAND:
-            case BEACON:
-            case ENDER_CHEST:
-            case FLOWER_POT:
-            case BLACK_BANNER:
-            case PLAYER_HEAD:
-            case PLAYER_WALL_HEAD:
-                return true;
-            default:
-                return false;
-        }
+        return switch (m) {
+            // 容器类
+            case FURNACE, BLAST_FURNACE, SMOKER, TRAPPED_CHEST, CHEST, ENDER_CHEST, HOPPER, DROPPER, DISPENSER, BREWING_STAND, BARREL, SHULKER_BOX,
+                 // 标牌类
+                 ACACIA_SIGN, ACACIA_WALL_SIGN, BIRCH_SIGN, BIRCH_WALL_SIGN, DARK_OAK_SIGN, DARK_OAK_WALL_SIGN, JUNGLE_SIGN, JUNGLE_WALL_SIGN,
+                 OAK_SIGN, OAK_WALL_SIGN, SPRUCE_SIGN, SPRUCE_WALL_SIGN, CRIMSON_SIGN, CRIMSON_WALL_SIGN, WARPED_SIGN, WARPED_WALL_SIGN,
+                 MANGROVE_SIGN, MANGROVE_WALL_SIGN, BAMBOO_SIGN, BAMBOO_WALL_SIGN, CHERRY_SIGN, CHERRY_WALL_SIGN,
+                 // 旗帜类
+                 BLACK_BANNER, BLUE_BANNER, BROWN_BANNER, CYAN_BANNER, GRAY_BANNER, GREEN_BANNER, LIGHT_BLUE_BANNER, LIGHT_GRAY_BANNER,
+                 LIME_BANNER, MAGENTA_BANNER, ORANGE_BANNER, PINK_BANNER, PURPLE_BANNER, RED_BANNER, WHITE_BANNER, YELLOW_BANNER,
+                 BLACK_WALL_BANNER, BLUE_WALL_BANNER, BROWN_WALL_BANNER, CYAN_WALL_BANNER, GRAY_WALL_BANNER, GREEN_WALL_BANNER,
+                 LIGHT_BLUE_WALL_BANNER, LIGHT_GRAY_WALL_BANNER, LIME_WALL_BANNER, MAGENTA_WALL_BANNER, ORANGE_WALL_BANNER,
+                 PINK_WALL_BANNER, PURPLE_WALL_BANNER, RED_WALL_BANNER, WHITE_WALL_BANNER, YELLOW_WALL_BANNER,
+                 // 头颅类
+                 PLAYER_HEAD, PLAYER_WALL_HEAD, SKELETON_SKULL, SKELETON_WALL_SKULL, WITHER_SKELETON_SKULL, WITHER_SKELETON_WALL_SKULL,
+                 ZOMBIE_HEAD, ZOMBIE_WALL_HEAD, CREEPER_HEAD, CREEPER_WALL_HEAD, DRAGON_HEAD, DRAGON_WALL_HEAD, PIGLIN_HEAD, PIGLIN_WALL_HEAD,
+                 // 其他功能方块
+                 BEACON, FLOWER_POT, ENCHANTING_TABLE, ANVIL, CHIPPED_ANVIL, DAMAGED_ANVIL, LECTERN, LOOM, CARTOGRAPHY_TABLE,
+                 FLETCHING_TABLE, SMITHING_TABLE, GRINDSTONE, STONECUTTER, BELL, CAMPFIRE, SOUL_CAMPFIRE, RESPAWN_ANCHOR,
+                 LODESTONE, SCULK_SENSOR, SCULK_SHRIEKER, CALIBRATED_SCULK_SENSOR, CHISELED_BOOKSHELF, DECORATED_POT,
+                 SUSPICIOUS_SAND, SUSPICIOUS_GRAVEL, TRIAL_SPAWNER, VAULT, CRAFTER -> true;
+            default -> m.name().contains("SHULKER_BOX") || m.name().contains("BED");
+        };
     }
 
     private boolean isSkull(Material material) {
-        return material.equals(XMaterial.PLAYER_HEAD.parseMaterial())
-                || material.equals(XMaterial.PLAYER_WALL_HEAD.parseMaterial());
+        return material.equals(XMaterial.PLAYER_HEAD.get())
+                || material.equals(XMaterial.PLAYER_WALL_HEAD.get());
     }
 }

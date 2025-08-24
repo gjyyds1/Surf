@@ -54,18 +54,14 @@ public class ItemUtil {
     public static boolean isAir(ItemStack i) {
         if (Util.isOlderAndEqual(13, 2)) {
             // From >=1.14 org.bukkit.Material.isAir()
-            switch (i.getType()) {
+            return switch (i.getType()) {
                 //<editor-fold defaultstate="collapsed" desc="isAir">
-                case AIR:
-                case CAVE_AIR:
-                case VOID_AIR:
-                    // ----- Legacy Separator -----
-                case LEGACY_AIR:
+                // ----- Legacy Separator -----
+                case AIR, CAVE_AIR, VOID_AIR ->
                     //</editor-fold>
-                    return true;
-                default:
-                    return false;
-            }
+                        true;
+                default -> false;
+            };
         }
 
         return i.getType().isAir();

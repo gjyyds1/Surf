@@ -2,6 +2,7 @@ package cn.dreeam.surf.modules.antiillegal;
 
 import cn.dreeam.surf.Surf;
 import cn.dreeam.surf.config.Config;
+import cn.dreeam.surf.checks.CheckManager;
 import cn.dreeam.surf.util.ItemUtil;
 import cn.dreeam.surf.util.MessageUtil;
 import org.bukkit.entity.Player;
@@ -25,9 +26,11 @@ public class CheckIllegal implements Listener {
     private void onJoin(PlayerJoinEvent event) {
         if (!Config.antiIllegalCheckWhenPlayerJoinEnabled) return;
 
-        Inventory inv = event.getPlayer().getInventory();
+        Player player = event.getPlayer();
+        Inventory inv = player.getInventory();
 
-        ItemUtil.cleanIllegals(inv, event.getPlayer().getName());
+        // 使用新的CheckManager进行检查，支持OP跳过
+        CheckManager.cleanInventory(inv, player.getName(), CheckManager.canBypassCheck(player));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -39,7 +42,8 @@ public class CheckIllegal implements Listener {
 
         if (!inv.getType().equals(InventoryType.CRAFTING)) return;
 
-        ItemUtil.cleanIllegals(inv, inv.getType().name());
+        // 漏斗传输不需要OP跳过检查
+        CheckManager.cleanInventory(inv, inv.getType().name(), false);
     }
 
     @EventHandler
@@ -47,11 +51,13 @@ public class CheckIllegal implements Listener {
     private void onInventoryClose(InventoryCloseEvent event) {
         if (!Config.antiIllegalCheckWhenInventoryCloseEnabled) return;
 
-        Inventory inv = event.getPlayer().getInventory();
+        Player player = (Player) event.getPlayer();
+        Inventory inv = player.getInventory();
 
         if (!inv.getType().equals(InventoryType.PLAYER)) return;
 
-        ItemUtil.cleanIllegals(inv, event.getPlayer().getName());
+        // 使用新的CheckManager进行检查，支持OP跳过
+        CheckManager.cleanInventory(inv, player.getName(), CheckManager.canBypassCheck(player));
     }
 
     @EventHandler
@@ -59,11 +65,13 @@ public class CheckIllegal implements Listener {
     private void onInventoryOpen(InventoryOpenEvent event) {
         if (!Config.antiIllegalCheckWhenInventoryOpenEnabled) return;
 
-        Inventory inv = event.getPlayer().getInventory();
+        Player player = (Player) event.getPlayer();
+        Inventory inv = player.getInventory();
 
         if (!inv.getType().equals(InventoryType.PLAYER)) return;
 
-        ItemUtil.cleanIllegals(inv, event.getPlayer().getName());
+        // 使用新的CheckManager进行检查，支持OP跳过
+        CheckManager.cleanInventory(inv, player.getName(), CheckManager.canBypassCheck(player));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -73,7 +81,8 @@ public class CheckIllegal implements Listener {
 
         ItemStack i = event.getItem();
 
-        if (ItemUtil.isIllegal(i)) {
+        // 使用新的CheckManager进行检查
+        if (CheckManager.isIllegal(i)) {
             event.setCancelled(true);
         }
     }
@@ -87,15 +96,20 @@ public class CheckIllegal implements Listener {
 
         ItemStack i = event.getItem().getItemStack();
 
-        if (ItemUtil.isIllegal(i)) {
+        // 使用新的CheckManager进行检查
+        if (CheckManager.isIllegal(i)) {
+            // 如果是玩家且可以跳过检查，则允许拾取
+            if (event.getEntity() instanceof Player player && CheckManager.canBypassCheck(player)) {
+                return;
+            }
+            
             event.setCancelled(true);
             event.getItem().remove();
-            if (event.getEntity() instanceof Player) {
-                Player player = (Player) event.getEntity();
-                MessageUtil.sendMessage(player, "&6You can not pick up this illegal item.");
+            if (event.getEntity() instanceof Player player) {
+                MessageUtil.sendMessage(player, "&6你不能拾取这个违法物品。");
             } else {
                 MessageUtil.println(String.format(
-                        "%s try to pick up an illegal item at %s",
+                        "%s 尝试拾取违法物品在 %s",
                         event.getEntity().getName().toLowerCase(),
                         MessageUtil.locToString(event.getItem().getLocation())
                 ));

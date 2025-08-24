@@ -28,7 +28,7 @@ public class ConnectionEvent implements Listener {
                     ? getConnectionMessageModern(player, Config.connectionFirstJoinMessage)
                     : getConnectionMessageModern(player, Config.connectionPlayerJoin);
 
-            event.setJoinMessage(null);
+            event.joinMessage(null);
             broadcastConnectionMessage(message);
         } else {
             String message = Config.connectionFirstJoinEnabled && !player.hasPlayedBefore()
@@ -46,7 +46,7 @@ public class ConnectionEvent implements Listener {
         if (Util.isNewerAndEqual(16, 0)) {
             Component message = getConnectionMessageModern(event.getPlayer(), Config.connectionPlayerLeave);
 
-            event.setQuitMessage(null);
+            event.quitMessage(null);
             broadcastConnectionMessage(message);
         } else {
             String message = getConnectionMessageLegacy(event.getPlayer(), Config.connectionPlayerLeave);
@@ -59,7 +59,7 @@ public class ConnectionEvent implements Listener {
     public void onKick(PlayerKickEvent event) {
         if (!Config.connectionPreventKickEnabled) return;
 
-        String reason = event.getReason();
+        String reason = String.valueOf(event.reason());
 
         if (Config.connectionKickReasons.contains(reason)) {
             event.setCancelled(true);
@@ -82,7 +82,7 @@ public class ConnectionEvent implements Listener {
     }
 
     private String getConnectionMessageLegacy(Player player, String message) {
-        String displayName = player.getDisplayName();
+        String displayName = String.valueOf(player.displayName());
         message = ChatColor.translateAlternateColorCodes('&', message);
 
         if (Config.connectionMessageUseDisplayName && !displayName.isEmpty()) {
@@ -96,7 +96,6 @@ public class ConnectionEvent implements Listener {
 
     private static void broadcastConnectionMessage(Component message) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player == null) continue;
 
             player.sendMessage(message);
         }

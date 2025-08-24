@@ -14,8 +14,7 @@ public class StackedTotem implements Listener {
         if (!Config.stackedTotemRevertAsOneEnabled) return;
 
         // Check when player gets damage or make damage to others
-        if (event.getEntity() instanceof Player) {
-            Player entity = (Player) event.getEntity();
+        if (event.getEntity() instanceof Player entity) {
 
             entity.getInventory().forEach(i -> {
                         if (i != null && ItemUtil.isIllegalTotem(i)) {

@@ -39,7 +39,6 @@ public class Util {
             .substring(0, Bukkit.getServer().getBukkitVersion().indexOf("-"))
             .split("\\.");
 
-    private final static int mcFirstVersion = Integer.parseInt(serverVersion[0]);
     private final static int majorVersion = Integer.parseInt(serverVersion[1]);
     private final static int minorVersion = serverVersion.length == 3? Integer.parseInt(serverVersion[2]) : 0;
 
@@ -50,20 +49,6 @@ public class Util {
         }
 
         return majorVersion == major && minorVersion > minor;
-    }
-
-    // == (major, minor)
-    public static boolean isEqualTo(int major, int minor) {
-        return majorVersion == major && minorVersion == minor;
-    }
-
-    // < (major, minor)
-    public static boolean isOlderThan(int major, int minor) {
-        if (majorVersion < major) {
-            return true;
-        }
-
-        return majorVersion == major && minorVersion < minor;
     }
 
     // >= (major, minor)

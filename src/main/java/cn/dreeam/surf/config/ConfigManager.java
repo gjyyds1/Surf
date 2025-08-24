@@ -2,11 +2,9 @@ package cn.dreeam.surf.config;
 
 import cn.dreeam.surf.Surf;
 import io.github.thatsmusic99.configurationmaster.api.ConfigFile;
-import io.github.thatsmusic99.configurationmaster.api.ConfigSection;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 /*
  *  Yoinked from: https://github.com/xGinko/AnarchyExploitFixes/
@@ -34,17 +32,6 @@ public class ConfigManager {
         config.save();
     }
 
-    private void structureConfig() {
-        createTitledSection("Language", "language");
-        createTitledSection("General", "general");
-        createTitledSection("Miscellaneous", "misc");
-    }
-
-    public void createTitledSection(String title, String path) {
-        config.addSection(title);
-        config.addDefault(path, null);
-    }
-
     public boolean getBoolean(String path, boolean def, String comment) {
         config.addDefault(path, def, comment);
         return config.getBoolean(path, def);
@@ -65,16 +52,6 @@ public class ConfigManager {
         return config.getString(path, def);
     }
 
-    public double getDouble(String path, double def, String comment) {
-        config.addDefault(path, def, comment);
-        return config.getDouble(path, def);
-    }
-
-    public double getDouble(String path, double def) {
-        config.addDefault(path, def);
-        return config.getDouble(path, def);
-    }
-
     public int getInt(String path, int def, String comment) {
         config.addDefault(path, def, comment);
         return config.getInteger(path, def);
@@ -93,23 +70,5 @@ public class ConfigManager {
     public List<String> getList(String path, List<String> def) {
         config.addDefault(path, def);
         return config.getStringList(path);
-    }
-
-    public ConfigSection getConfigSection(String path, Map<String, Object> defaultKeyValue) {
-        config.addDefault(path, null);
-        config.makeSectionLenient(path);
-        defaultKeyValue.forEach((string, object) -> config.addExample(path + "." + string, object));
-        return config.getConfigSection(path);
-    }
-
-    public ConfigSection getConfigSection(String path, Map<String, Object> defaultKeyValue, String comment) {
-        config.addDefault(path, null, comment);
-        config.makeSectionLenient(path);
-        defaultKeyValue.forEach((string, object) -> config.addExample(path + "." + string, object));
-        return config.getConfigSection(path);
-    }
-
-    public void addComment(String path, String comment) {
-        config.addComment(path, comment);
     }
 }

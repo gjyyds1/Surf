@@ -20,7 +20,6 @@ import cn.dreeam.surf.modules.patch.DispenserCrash;
 import cn.dreeam.surf.modules.patch.GateWay;
 import cn.dreeam.surf.modules.patch.NBTBan;
 import cn.dreeam.surf.modules.patch.PreventEnderPearlClip;
-import com.tcoded.folialib.FoliaLib;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
@@ -43,8 +42,6 @@ public class Surf extends JavaPlugin {
     private static ConfigManager configManager;
     private final PluginManager pluginManager = getServer().getPluginManager();
     private final CommandHandler commandHandler = new CommandHandler(this);
-
-    public FoliaLib foliaLib = new FoliaLib(this);
 
     public boolean isRoseStackerEnabled = false;
 

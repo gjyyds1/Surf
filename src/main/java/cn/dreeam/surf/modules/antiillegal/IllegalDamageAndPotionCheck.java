@@ -31,8 +31,7 @@ public class IllegalDamageAndPotionCheck implements Listener {
         if (!Config.checkIllegalDamageEnabled) return;
 
         // Player => Entity
-        if (event.getDamager() instanceof Player) {
-            Player damager = (Player) event.getDamager();
+        if (event.getDamager() instanceof Player damager) {
             if (!damager.getInventory().getItemInMainHand().getType().toString().equals("MACE") && event.getDamage() > 30) { // Dreeam TODO: check illegal mace
                 event.setCancelled(true);
                 damager.getInventory().remove(damager.getInventory().getItemInMainHand()); // Seems only can use item on main hand to attack
@@ -42,8 +41,7 @@ public class IllegalDamageAndPotionCheck implements Listener {
             // Entity => Entity
             Entity entity = event.getDamager();
 
-            if (entity instanceof LivingEntity) {
-                LivingEntity damager = (LivingEntity) entity;
+            if (entity instanceof LivingEntity damager) {
                 // Only check entities using illegal items
                 if (damager.getEquipment() != null && damager.getEquipment().getItemInMainHand().hasItemMeta()) {
                     double damage = event.getDamage();
@@ -67,12 +65,10 @@ public class IllegalDamageAndPotionCheck implements Listener {
 
             // Player: Projectile -> Entity
             // Dreeam TODO: this is temp fix, need to rewrite.
-            if (entity instanceof Projectile) {
-                Projectile projectile = (Projectile) entity;
+            if (entity instanceof Projectile projectile) {
                 if (event.getDamage() > 30) {
                     event.setCancelled(true);
-                    if (projectile.getShooter() instanceof Player) {
-                        Player shooter = (Player) projectile.getShooter();
+                    if (projectile.getShooter() instanceof Player shooter) {
                         if (shooter.getInventory().getItemInMainHand().getType().toString().endsWith("BOW")) shooter.getInventory().setItemInMainHand(null); // Seems only can use item on main hand to attack
                         MessageUtil.sendMessage(shooter, Config.checkIllegalDamageMessage);
                     }
@@ -121,8 +117,7 @@ public class IllegalDamageAndPotionCheck implements Listener {
         if (effect != null) {
             if (ItemUtil.isIllegalEffect(effect)) {
                 event.setCancelled(true);
-                if (event.getEntity() instanceof Player) {
-                    Player player = (Player) event.getEntity();
+                if (event.getEntity() instanceof Player player) {
                     MessageUtil.sendMessage(player, Config.checkIllegalPotionMessage);
                 }
             }
@@ -134,12 +129,11 @@ public class IllegalDamageAndPotionCheck implements Listener {
     private void onHit(ProjectileHitEvent event) {
         if (!Config.checkIllegalPotionEnabled) return;
 
-        if (!(event.getEntity() instanceof Arrow) || !(event.getEntity().getShooter() instanceof Player)
+        if (!(event.getEntity() instanceof Arrow arrow) || !(event.getEntity().getShooter() instanceof Player)
                 || !(event.getHitEntity() instanceof Player)) {
             return;
         }
 
-        Arrow arrow = (Arrow) event.getEntity();
         Player shooter = (Player) arrow.getShooter();
 
         for (PotionEffect effect : arrow.getCustomEffects()) {
@@ -155,11 +149,10 @@ public class IllegalDamageAndPotionCheck implements Listener {
     private void onThrow(PotionSplashEvent event) {
         if (!Config.checkIllegalPotionEnabled) return;
 
-        if (!(event.getPotion().getShooter() instanceof Player)) {
+        if (!(event.getPotion().getShooter() instanceof Player player)) {
             return;
         }
 
-        Player player = (Player) event.getPotion().getShooter();
         ItemStack pot = event.getPotion().getItem();
 
         for (PotionEffect effect : event.getPotion().getEffects()) {

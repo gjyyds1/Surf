@@ -6,8 +6,6 @@ import org.bukkit.command.CommandSender;
 
 public abstract class BaseCommand {
 
-    public final String CONSOLE_ONLY = "This command is console only";
-    public final String PLAYER_ONLY = "This command is player only";
     private final String name;
     private final String usage;
     private final String permission;

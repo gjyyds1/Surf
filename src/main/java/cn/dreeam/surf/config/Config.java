@@ -10,6 +10,9 @@ public class Config {
 
     // Prefix
     public static String prefix;
+    
+    // Op Bypass
+    public static boolean opBypassEnabled;
 
     // Anti Illegal
     public static boolean antiIllegalCheckIllegalBlockEnabled, antiIllegalRemoveBlockEnchant, antiIllegalAllowInapplicableEnchant, checkIllegalDamageEnabled, checkIllegalPotionEnabled, stackedTotemRevertAsOneEnabled, antiIllegalDeleteIllegalsWhenFoundEnabled, antiIllegalCheckWhenPlayerJoinEnabled, antiIllegalCheckWhenHopperTransferEnabled, antiIllegalCheckWhenInventoryCloseEnabled, antiIllegalCheckWhenInventoryOpenEnabled, antiIllegalCheckWhenItemPickupEnabled;
@@ -34,7 +37,10 @@ public class Config {
 
     public static void initConfig() {
         // Prefix
-        prefix = Surf.configManager().getString("Prefix", "&6&l[&b&lSurf&6&l]&6 ", "Message prefix");
+        prefix = Surf.configManager().getString("Prefix", "&6&l[&b&lSurf&6&l]&6 ", "消息前缀");
+        
+        // Op Bypass
+        opBypassEnabled = Surf.configManager().getBoolean("op-bypass.enabled", true, "是否允许OP跳过所有检测");
 
         // Anti Illegal
         antiIllegalCheckIllegalBlockEnabled = Surf.configManager().getBoolean("anti-illegal.check-illegal-block.enabled", true, """

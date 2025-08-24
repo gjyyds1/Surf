@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CommandHandler implements org.bukkit.command.CommandExecutor, org.bukkit.command.TabCompleter {
 
@@ -29,12 +30,12 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor, org.b
 
     private void addCommand(BaseCommand command) {
         commands.add(command);
-        plugin.getCommand(command.getName()).setExecutor(this);
-        plugin.getCommand(command.getName()).setTabCompleter(this);
+        Objects.requireNonNull(plugin.getCommand(command.getName())).setExecutor(this);
+        Objects.requireNonNull(plugin.getCommand(command.getName())).setTabCompleter(this);
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String @NotNull [] args) {
         for (BaseCommand command : commands) {
             if (command.getName().equalsIgnoreCase(cmd.getName())) {
                 if (sender.hasPermission(command.getPermission())) {
@@ -49,7 +50,7 @@ public class CommandHandler implements org.bukkit.command.CommandExecutor, org.b
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         if (args.length == 1) {
             List<String> completions = new ArrayList<>();
 
